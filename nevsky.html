@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дмитрий Невский — Эксперт по харизме и лидерству</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080b12;
+      --g1: #2878d0; --g2: #78bcff; --g3: #5aa0e8;
+      --text: #d4e8f7; --muted: #5a7090;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #particles {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    /* ── Угловой декор ── */
+    .emblem {
+      position: fixed;
+      top: -55px; right: -55px;
+      width: 210px; height: 210px;
+      z-index: 0; pointer-events: none;
+    }
+    .emblem svg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      animation: emb-spin 28s linear infinite;
+      transform-origin: center center;
+    }
+    @keyframes emb-spin { to { transform: rotate(360deg); } }
+    .emblem-core {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, #a0d4ff 0%, #2060c0 55%, #040d24 100%);
+      box-shadow:
+        0 0 36px 12px rgba(32,100,200,.40),
+        0 0 80px 30px rgba(10,50,180,.18);
+      animation: emb-pulse 4s ease-in-out infinite;
+    }
+    @keyframes emb-pulse {
+      0%,100% {
+        box-shadow: 0 0 36px 12px rgba(32,100,200,.40), 0 0 80px 30px rgba(10,50,180,.18);
+      }
+      50% {
+        box-shadow: 0 0 55px 20px rgba(80,170,255,.55), 0 0 120px 48px rgba(40,120,255,.25);
+      }
+    }
+
+    /* ── Карточка ── */
+    .card {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 900px;
+      margin: 40px 20px;
+      background: rgba(5,9,20,.90);
+      border: 1px solid rgba(40,120,208,.16);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow:
+        0 0 0 1px rgba(40,120,208,.05),
+        0 40px 100px rgba(0,0,0,.80),
+        inset 0 1px 0 rgba(80,160,255,.06);
+      overflow: hidden;
+      animation: card-in 1s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(32px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .card::after {
+      content: '';
+      position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--g1), transparent);
+      z-index: 3; pointer-events: none;
+    }
+
+    /* ── Сетка внутри ── */
+    .inner {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 530px;
+    }
+
+    /* ── Колонка фото ── */
+    .photo-col {
+      position: relative; overflow: hidden;
+    }
+    .photo-col img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: brightness(.88) saturate(.92) contrast(1.06);
+    }
+    .photo-col::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, transparent 55%, rgba(5,9,20,.95) 100%),
+        linear-gradient(180deg, rgba(5,9,20,.15) 0%, transparent 25%, transparent 65%, rgba(5,9,20,.60) 100%);
+      z-index: 1;
+    }
+
+    /* ── Колонка контента ── */
+    .content-col {
+      padding: 44px 44px 40px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .ornament {
+      color: rgba(40,120,208,.30);
+      font-size: 15px; letter-spacing: 10px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Блок-табличка с именем ── */
+    .name-block {
+      display: inline-block;
+      padding: 16px 24px 14px;
+      border: 1px solid rgba(40,120,208,.45);
+      border-radius: 10px;
+      background: rgba(40,120,208,.07);
+      box-shadow:
+        0 0 0 1px rgba(40,120,208,.10),
+        0 0 28px rgba(40,120,208,.18),
+        inset 0 1px 0 rgba(120,188,255,.12);
+      margin-bottom: 14px;
+      animation: block-glow 5s ease-in-out infinite;
+    }
+    @keyframes block-glow {
+      0%,100% {
+        box-shadow: 0 0 0 1px rgba(40,120,208,.10), 0 0 28px rgba(40,120,208,.18), inset 0 1px 0 rgba(120,188,255,.12);
+      }
+      50% {
+        box-shadow: 0 0 0 1px rgba(80,160,255,.20), 0 0 48px rgba(60,140,255,.32), inset 0 1px 0 rgba(160,220,255,.20);
+      }
+    }
+
+    .name {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: normal;
+      letter-spacing: .08em;
+      line-height: 1.1;
+      background: linear-gradient(130deg, #ffffff 0%, var(--g2) 45%, #a0d4ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 18px rgba(80,160,255,.60));
+      animation: name-glow 5s ease-in-out infinite;
+    }
+    @keyframes name-glow {
+      0%,100% { filter: drop-shadow(0 0 18px rgba(80,160,255,.60)); }
+      50%      { filter: drop-shadow(0 0 36px rgba(160,220,255,.90)); }
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: rgba(160,210,255,.75);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    .divider {
+      width: 56px; height: 1px;
+      background: linear-gradient(90deg, var(--g1), transparent);
+      margin: 20px 0 17px;
+    }
+
+    .bio {
+      font-size: 17px;
+      line-height: 1.85;
+      color: rgba(212,232,247,.70);
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .exp-title {
+      font-size: 13px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 11px;
+    }
+
+    .exp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 26px;
+    }
+    .exp-list li {
+      font-size: 15px;
+      line-height: 1.55;
+      color: rgba(212,232,247,.68);
+      padding-left: 20px;
+      position: relative;
+    }
+    .exp-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: rgba(40,120,208,.70);
+    }
+
+    /* ── Кнопки социалок ── */
+    .socials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(40,120,208,.15);
+      color: rgba(212,232,247,.72);
+      text-decoration: none;
+      font-size: 14px;
+      letter-spacing: .03em;
+      font-family: Georgia, serif;
+      transition:
+        transform .3s cubic-bezier(.22,1,.36,1),
+        border-color .3s, box-shadow .3s, color .3s, background .3s;
+      position: relative; overflow: hidden;
+    }
+    .social-btn::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(135deg, rgba(40,120,208,.15), rgba(80,160,255,.08));
+      opacity: 0; transition: opacity .3s;
+    }
+    .social-btn:hover::before { opacity: 1; }
+    .social-btn:hover {
+      color: var(--g2);
+      border-color: rgba(40,120,208,.55);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(40,120,208,.22), 0 0 0 1px rgba(40,120,208,.12);
+    }
+    .social-btn svg {
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+      opacity: .75;
+      transition: opacity .3s;
+    }
+    .social-btn:hover svg { opacity: 1; }
+    .social-btn span {
+      position: relative; z-index: 1;
+      line-height: 1.4;
+    }
+
+    .footer {
+      margin-top: 22px; font-size: 13px;
+      color: rgba(90,112,144,.28);
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+
+    /* ── Мобильная версия ── */
+    @media (max-width: 680px) {
+      .inner { grid-template-columns: 1fr; }
+      .photo-col { height: 320px; }
+      .photo-col img { object-position: center 15%; }
+      .photo-col::after {
+        background: linear-gradient(180deg, transparent 45%, rgba(5,9,20,.92) 100%);
+      }
+      .content-col { padding: 30px 22px 40px; }
+      .name { font-size: clamp(24px, 7vw, 32px); }
+      .socials-grid { grid-template-columns: 1fr; }
+      .emblem { width: 150px; height: 150px; top: -40px; right: -40px; }
+      .emblem-core { width: 54px; height: 54px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- Угловой декор -->
+<div class="emblem">
+  <svg viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g stroke-linecap="round">
+      <line x1="110" y1="8"   x2="110" y2="34"  stroke="#2878d0" stroke-opacity=".65" stroke-width="2.5"/>
+      <line x1="110" y1="186" x2="110" y2="212" stroke="#1050a0" stroke-opacity=".45" stroke-width="2.5"/>
+      <line x1="8"   y1="110" x2="34"  y2="110" stroke="#1050a0" stroke-opacity=".45" stroke-width="2.5"/>
+      <line x1="186" y1="110" x2="212" y2="110" stroke="#1050a0" stroke-opacity=".45" stroke-width="2.5"/>
+      <line x1="38"  y1="38"  x2="54"  y2="54"  stroke="#3080d0" stroke-opacity=".5"  stroke-width="2"/>
+      <line x1="166" y1="166" x2="182" y2="182" stroke="#1868a0" stroke-opacity=".35" stroke-width="2"/>
+      <line x1="182" y1="38"  x2="166" y2="54"  stroke="#3080d0" stroke-opacity=".5"  stroke-width="2"/>
+      <line x1="38"  y1="182" x2="54"  y2="166" stroke="#1868a0" stroke-opacity=".35" stroke-width="2"/>
+      <line x1="72"  y1="14"  x2="77"  y2="34"  stroke="#50a0e0" stroke-opacity=".4"  stroke-width="1.5"/>
+      <line x1="148" y1="14"  x2="143" y2="34"  stroke="#50a0e0" stroke-opacity=".4"  stroke-width="1.5"/>
+      <line x1="14"  y1="72"  x2="34"  y2="77"  stroke="#2878d0" stroke-opacity=".35" stroke-width="1.5"/>
+      <line x1="14"  y1="148" x2="34"  y2="143" stroke="#2878d0" stroke-opacity=".35" stroke-width="1.5"/>
+      <line x1="206" y1="72"  x2="186" y2="77"  stroke="#2878d0" stroke-opacity=".35" stroke-width="1.5"/>
+      <line x1="206" y1="148" x2="186" y2="143" stroke="#2878d0" stroke-opacity=".35" stroke-width="1.5"/>
+      <line x1="72"  y1="206" x2="77"  y2="186" stroke="#50a0e0" stroke-opacity=".4"  stroke-width="1.5"/>
+      <line x1="148" y1="206" x2="143" y2="186" stroke="#50a0e0" stroke-opacity=".4"  stroke-width="1.5"/>
+    </g>
+  </svg>
+  <div class="emblem-core"></div>
+</div>
+
+<!-- Карточка -->
+<div class="card">
+  <div class="inner">
+
+    <!-- Фото слева -->
+    <div class="photo-col">
+      <img src="nevsky-photo.jpg" alt="Дмитрий Невский" />
+    </div>
+
+    <!-- Контент справа -->
+    <div class="content-col">
+      <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+      <div class="name-block">
+        <h1 class="name">ДМИТРИЙ НЕВСКИЙ</h1>
+        <p class="subtitle">Эксперт по харизме и лидерству</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="bio">Человек-действие. Перевёл личные кризисы<br>в дисциплину, опору и рост.</p>
+
+      <p class="exp-title">Опыт</p>
+      <ul class="exp-list">
+        <li>Ведущий масштабных спортивных событий и&nbsp;бизнес-конференций (300+ / 1000+)</li>
+        <li>Финалы турниров по&nbsp;ММА, рекорд&nbsp;— 19&nbsp;часов ведения подряд</li>
+        <li>Диктор аудиокниг, ведущий подкастов</li>
+        <li>Актёр короткометражных фильмов, кино-продюсер</li>
+      </ul>
+
+      <div class="socials-grid">
+        <!-- Написать в TG -->
+        <a class="social-btn" href="https://t.me/DmitryNevsky" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.932z"/>
+          </svg>
+          <span>Написать<br>в Telegram</span>
+        </a>
+        <!-- Канал TG -->
+        <a class="social-btn" href="https://t.me/nevskyleader" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.932z"/>
+          </svg>
+          <span>Канал ТГ<br>«Харизма и лидерство»</span>
+        </a>
+        <!-- Instagram -->
+        <a class="social-btn" href="https://www.instagram.com/nevsky.star" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          <span>Instagram</span>
+        </a>
+        <!-- VK -->
+        <a class="social-btn" href="https://vk.ru/dnevsky89" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.523-2.049-1.727-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.743c.372 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.405 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .643.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.49-.085.745-.576.745z"/>
+          </svg>
+          <span>VK</span>
+        </a>
+      </div>
+
+      <p class="footer">@nevsky.star &nbsp;·&nbsp; харизма и лидерство</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const cv = document.getElementById('particles');
+  const cx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COLORS = [
+    'rgba(40,120,208,1)',
+    'rgba(80,160,255,1)',
+    'rgba(160,210,255,1)',
+    'rgba(100,180,255,1)',
+    'rgba(200,230,255,1)',
+  ];
+
+  class Spark {
+    reset(init){
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 8;
+      this.r = Math.random() * 1.8 + .3;
+      this.vy = -(Math.random() * 1.2 + .3);
+      this.vx = (Math.random() - .5) * .6;
+      this.life = Math.random() * .4 + .6;
+      this.decay = Math.random() * .006 + .003;
+      this.col = COLORS[Math.floor(Math.random() * COLORS.length)];
+    }
+    constructor(){ this.reset(true); }
+    tick(){
+      this.y += this.vy;
+      this.x += this.vx + Math.sin(this.y * .035) * .35;
+      this.vy *= .998;
+      this.life -= this.decay;
+      if(this.life <= 0 || this.y < -8) this.reset(false);
+    }
+    draw(){
+      cx.beginPath();
+      cx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      cx.fillStyle = this.col;
+      cx.globalAlpha = Math.max(0, this.life) * .5;
+      cx.fill();
+    }
+  }
+
+  const sparks = Array.from({length: 120}, () => new Spark());
+
+  function drawGlow(){
+    const g = cx.createLinearGradient(0, H, 0, H - 220);
+    g.addColorStop(0,   'rgba(20,60,180,.10)');
+    g.addColorStop(.35, 'rgba(40,100,200,.05)');
+    g.addColorStop(.7,  'rgba(40,120,255,.02)');
+    g.addColorStop(1,   'rgba(0,0,0,0)');
+    cx.fillStyle = g;
+    cx.fillRect(0, H - 220, W, 220);
+  }
+
+  (function loop(){
+    cx.clearRect(0, 0, W, H);
+    cx.globalAlpha = 1;
+    drawGlow();
+    for(const s of sparks){ s.tick(); s.draw(); }
+    cx.globalAlpha = 1;
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+</body>
+</html>
