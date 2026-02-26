@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decant Pro — Калькулятор деканта</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --purple: #a855f7;
+      --stone-500: #78716c;
+      --stone-400: #a8a29e;
+      --glass: rgba(255,255,255,0.05);
+      --glass-b: rgba(255,255,255,0.1);
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      padding-bottom: 5rem;
+    }
+
+    /* ── Orbs ── */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(120px); pointer-events: none; z-index: 0;
+      animation: pulse 6s ease-in-out infinite;
+    }
+    .orb-1 { top:-10%; left:-10%; width:40%; height:40%; background:rgba(16,185,129,.1); }
+    .orb-2 { bottom:-10%; right:-10%; width:50%; height:50%; background:rgba(168,85,247,.1); animation-delay:2s; }
+    .orb-3 { top:20%; right:10%; width:30%; height:30%; background:rgba(59,130,246,.1); animation-delay:4s; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    /* ── Layout ── */
+    .wrap { position:relative; z-index:10; max-width:480px; margin:0 auto; padding:2rem 1rem; }
+
+    /* ── Header ── */
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; }
+    .logo  { display:flex; align-items:center; gap:1rem; }
+    .logo-icon {
+      width:3rem; height:3rem;
+      background:rgba(255,255,255,.1); backdrop-filter:blur(20px);
+      border-radius:1rem; display:flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.2); font-size:1.4rem;
+    }
+    .logo h1  { font-size:1.2rem; font-weight:800; letter-spacing:-.02em; }
+    .logo p   { font-size:.6rem; color:var(--stone-500); text-transform:uppercase; letter-spacing:.2em; font-weight:700; }
+    .hbtns    { display:flex; gap:.5rem; }
+    .icon-btn {
+      width:2.75rem; height:2.75rem; border-radius:.75rem;
+      border:1px solid var(--glass-b); background:var(--glass);
+      color:var(--stone-400); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; transition:all .2s;
+    }
+    .icon-btn.active, .icon-btn:hover { background:var(--emerald); color:#fff; border-color:var(--emerald); }
+
+    /* ── Panels ── */
+    .panel {
+      background:var(--glass); backdrop-filter:blur(20px);
+      border-radius:1.5rem; border:1px solid var(--glass-b);
+      padding:1.5rem; margin-bottom:1.5rem; display:none;
+    }
+    .panel.show { display:block; }
+    .panel-title { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.2em; margin-bottom:1rem; }
+    .em { color:var(--emerald); }
+    .pu { color:var(--purple); }
+
+    /* ── Form card ── */
+    .card {
+      background:var(--glass); backdrop-filter:blur(20px);
+      border-radius:2rem; border:1px solid var(--glass-b);
+      padding:2rem;
+    }
+    .card > * + * { margin-top:1.5rem; }
+
+    /* ── Grid ── */
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+    /* ── Fields ── */
+    .field { display:flex; flex-direction:column; gap:.5rem; }
+    .field label {
+      font-size:.6rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.15em; color:var(--stone-500);
+      display:flex; align-items:center; gap:.4rem; margin-left:.25rem;
+    }
+    .field label .ic { color:rgba(16,185,129,.7); }
+    .field input, .field select {
+      width:100%; background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1); border-radius:1rem;
+      padding:.9rem 1.2rem; color:#fff;
+      font-family:'Inter',sans-serif; font-size:1rem; font-weight:500;
+      outline:none; transition:all .2s;
+    }
+    .field input::placeholder { color:rgba(120,113,108,.8); }
+    .field input:focus, .field select:focus {
+      border-color:rgba(16,185,129,.5);
+      box-shadow:0 0 0 3px rgba(16,185,129,.1);
+    }
+    .field select option { background:#1c1917; }
+
+    /* ── Section header ── */
+    .sec-hdr {
+      display:flex; align-items:center; justify-content:space-between;
+      padding-top:1rem; border-top:1px solid rgba(255,255,255,.05);
+    }
+    .sec-title { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:var(--stone-500); }
+    .sec-acts  { display:flex; align-items:center; gap:.5rem; }
+    .txt-btn {
+      background:none; border:none; cursor:pointer;
+      font-size:.6rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:var(--emerald); transition:color .2s; padding:.25rem;
+    }
+    .txt-btn:hover { color:var(--emerald-light); }
+    .sm-icon-btn {
+      background:none; border:none; cursor:pointer;
+      color:var(--stone-500); transition:color .2s;
+      padding:.25rem; display:flex; align-items:center;
+    }
+    .sm-icon-btn:hover { color:#fff; }
+
+    /* ── Templates ── */
+    .tpl-list { margin-top:.75rem; display:flex; flex-direction:column; gap:.5rem; }
+    .tpl-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.75rem; background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1); border-radius:.75rem;
+      cursor:pointer; transition:background .2s;
+    }
+    .tpl-item:hover { background:rgba(255,255,255,.12); }
+    .tpl-item span { font-size:.875rem; font-weight:500; }
+    .del-btn {
+      background:none; border:none; cursor:pointer;
+      color:transparent; transition:color .2s; font-size:.875rem;
+    }
+    .tpl-item:hover .del-btn { color:#f43f5e; }
+
+    /* ── Buttons ── */
+    .btn-row { display:flex; gap:.75rem; }
+    .btn-calc {
+      flex:1; background:linear-gradient(135deg,#10b981,#0d9488);
+      color:#fff; border:none; border-radius:1rem; padding:1.1rem;
+      font-size:1.1rem; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:.5rem;
+      transition:all .2s; box-shadow:0 10px 30px rgba(16,185,129,.25);
+    }
+    .btn-calc:hover { background:linear-gradient(135deg,#34d399,#14b8a6); transform:scale(1.01); }
+    .btn-calc:active { transform:scale(.98); }
+    .btn-reset {
+      width:4rem; background:linear-gradient(135deg,#f43f5e,#f97316);
+      color:#fff; border:none; border-radius:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; transition:all .2s;
+      box-shadow:0 10px 30px rgba(244,63,94,.25);
+    }
+    .btn-reset:hover { background:linear-gradient(135deg,#fb7185,#fb923c); }
+    .btn-reset:active { transform:scale(.98); }
+
+    /* ── Results ── */
+    .results { margin-top:2rem; }
+    .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:.5rem; margin-bottom:1rem; }
+    .res-card {
+      background:rgba(255,255,255,.1); backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,.2); border-radius:1.5rem;
+      padding:1.25rem; display:flex; flex-direction:column;
+      position:relative; overflow:hidden;
+    }
+    .res-card::before {
+      content:''; position:absolute; top:0; right:0;
+      width:3rem; height:3rem;
+      background:rgba(16,185,129,.12); border-radius:50%; filter:blur(12px);
+    }
+    .res-vol   { font-size:.6rem; color:var(--stone-500); font-weight:700; text-transform:uppercase; letter-spacing:.2em; margin-bottom:.25rem; }
+    .res-price { font-size:2rem; font-weight:900; line-height:1; margin-bottom:.5rem; }
+    .res-foot  {
+      display:flex; align-items:center; justify-content:space-between;
+      padding-top:.5rem; border-top:1px solid rgba(255,255,255,.05); margin-top:auto;
+    }
+    .res-plabel { font-size:.55rem; color:rgba(52,211,153,.6); font-weight:700; text-transform:uppercase; }
+    .res-profit { font-size:.75rem; font-weight:700; color:var(--emerald); }
+
+    /* ── Export ── */
+    .exp-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+    .btn-exp {
+      background:rgba(255,255,255,.08); color:#fff;
+      border:1px solid rgba(255,255,255,.1); border-radius:1rem;
+      padding:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:.5rem;
+      font-size:.75rem; font-weight:700; transition:background .2s;
+    }
+    .btn-exp:hover { background:rgba(255,255,255,.18); }
+
+    /* ── History ── */
+    .his-list { max-height:15rem; overflow-y:auto; display:flex; flex-direction:column; gap:.5rem; }
+    .his-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.75rem; background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.05); border-radius:.75rem;
+      cursor:pointer; transition:background .2s;
+    }
+    .his-item:hover { background:rgba(255,255,255,.1); }
+    .his-name { font-size:.875rem; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:10rem; }
+    .his-date { font-size:.6rem; color:var(--stone-500); }
+    .panel-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+    .btn-danger { background:none; border:none; cursor:pointer; font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--stone-500); transition:color .2s; }
+    .btn-danger:hover { color:#f43f5e; }
+
+    /* ── Misc ── */
+    .hidden { display:none !important; }
+    footer { margin-top:3rem; text-align:center; color:var(--stone-500); font-size:.6rem; text-transform:uppercase; letter-spacing:.3em; font-weight:700; }
+
+    /* ── Toast ── */
+    .toast {
+      position:fixed; bottom:2rem; left:50%;
+      transform:translateX(-50%) translateY(120px);
+      background:rgba(16,185,129,.92); color:#fff;
+      padding:.7rem 1.4rem; border-radius:1rem;
+      font-size:.875rem; font-weight:600;
+      z-index:999; transition:transform .3s; backdrop-filter:blur(10px);
+      white-space:nowrap;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:rgba(255,255,255,.05); border-radius:10px; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:10px; }
+    ::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,.22); }
+
+    @media (max-width:400px) {
+      .card { padding:1.25rem; }
+      .res-price { font-size:1.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">💧</div>
+      <div>
+        <h1>Decant Pro</h1>
+        <p>Premium Calculator</p>
+      </div>
+    </div>
+    <div class="hbtns">
+      <button class="icon-btn" id="historyBtn" title="История" onclick="togglePanel('history')">🕐</button>
+      <button class="icon-btn" id="settingsBtn" title="Настройки" onclick="togglePanel('settings')">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Settings panel -->
+  <div class="panel" id="settingsPanel">
+    <div class="panel-title em">Настройки наценок и округления</div>
+    <div class="g2" style="margin-bottom:1rem">
+      <div class="field">
+        <label><span class="ic">🪙</span> Наценка &lt; 5 мл</label>
+        <input type="number" id="surchargeSmall" placeholder="150" value="150" />
+      </div>
+      <div class="field">
+        <label><span class="ic">🪙</span> Наценка ≥ 5 мл</label>
+        <input type="number" id="surchargeLarge" placeholder="100" value="100" />
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field">
+        <label><span class="ic">📉</span> Потери (%)</label>
+        <input type="number" id="lossFactor" placeholder="2" value="2" />
+      </div>
+      <div class="field">
+        <label><span class="ic">🎯</span> Округление</label>
+        <select id="roundingMode">
+          <option value="none">Без округления</option>
+          <option value="10" selected>До 10 ₽</option>
+          <option value="50">До 50 ₽</option>
+          <option value="9">На девятку (..9)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- History panel -->
+  <div class="panel" id="historyPanel">
+    <div class="panel-row">
+      <div class="panel-title pu" style="margin-bottom:0">История расчётов</div>
+      <button class="btn-danger" onclick="clearHistory()">Очистить</button>
+    </div>
+    <div class="his-list" id="historyList">
+      <p style="color:var(--stone-500);font-size:.75rem;text-align:center;padding:1rem;font-style:italic">История пуста</p>
+    </div>
+  </div>
+
+  <!-- Main form -->
+  <div class="card">
+    <div class="field">
+      <label><span class="ic">✏️</span> Название парфюма</label>
+      <input type="text" id="perfumeName" placeholder="Например: Baccarat Rouge 540" />
+    </div>
+
+    <div class="g2">
+      <div class="field">
+        <label><span class="ic">💧</span> Себест. 1 мл</label>
+        <input type="number" id="costPerMl" placeholder="0.00" step="0.01" />
+      </div>
+      <div class="field">
+        <label><span class="ic">ℹ️</span> Наценка (%)</label>
+        <input type="number" id="markup" placeholder="20" value="20" />
+      </div>
+    </div>
+
+    <!-- Consumables -->
+    <div>
+      <div class="sec-hdr">
+        <span class="sec-title">Расходники</span>
+        <div class="sec-acts">
+          <button class="txt-btn" id="tplBtn" onclick="toggleTemplates()">Шаблоны (0)</button>
+          <button class="sm-icon-btn" onclick="saveTemplate()" title="Сохранить шаблон">💾</button>
+        </div>
+      </div>
+
+      <div class="tpl-list hidden" id="tplList"></div>
+
+      <div class="g2" style="margin-top:1rem">
+        <div class="field">
+          <label><span class="ic">📦</span> Атомайзер</label>
+          <input type="number" id="atomizer" placeholder="0" />
+        </div>
+        <div class="field">
+          <label><span class="ic">🚚</span> Доставка</label>
+          <input type="number" id="delivery" placeholder="0" />
+        </div>
+      </div>
+      <div class="g2" style="margin-top:1rem">
+        <div class="field">
+          <label><span class="ic">🏷️</span> Наклейка</label>
+          <input type="number" id="sticker" placeholder="0" />
+        </div>
+        <div class="field">
+          <label><span class="ic">📫</span> Упаковка</label>
+          <input type="number" id="packaging" placeholder="0" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:1rem">
+        <label><span class="ic">🪙</span> Другие расходы</label>
+        <input type="number" id="others" placeholder="0" />
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-calc" onclick="calculate()">🧮 Рассчитать сетку</button>
+      <button class="btn-reset" onclick="resetForm()" title="Сбросить">🔄</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results hidden" id="results">
+    <div class="res-grid" id="resGrid"></div>
+    <div class="exp-grid">
+      <button class="btn-exp" onclick="copyPrices()">
+        <span>📋</span> Скопировать цены
+      </button>
+      <button class="btn-exp" onclick="exportImage()">
+        <span style="color:#a855f7">🖼️</span> Картинка (Story)
+      </button>
+    </div>
+  </div>
+
+  <footer><p>© <span id="yr"></span> Decant Pro Calculator</p></footer>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* ── State ── */
+  let templates = JSON.parse(localStorage.getItem('perfume_templates') || '[]');
+  let history   = JSON.parse(localStorage.getItem('perfume_history')   || '[]');
+  let results   = [];
+
+  /* ── Settings persistence ── */
+  const SETTING_IDS = ['surchargeSmall', 'surchargeLarge', 'lossFactor', 'roundingMode'];
+  const saved = JSON.parse(localStorage.getItem('perfume_settings') || '{}');
+  SETTING_IDS.forEach(id => {
+    if (saved[id] != null) document.getElementById(id).value = saved[id];
+    document.getElementById(id).addEventListener('change', saveSettings);
+  });
+  function saveSettings() {
+    const obj = {};
+    SETTING_IDS.forEach(id => obj[id] = document.getElementById(id).value);
+    localStorage.setItem('perfume_settings', JSON.stringify(obj));
+  }
+
+  /* ── Panels ── */
+  function togglePanel(name) {
+    const panel = document.getElementById(name + 'Panel');
+    const btn   = document.getElementById(name + 'Btn');
+    const open  = panel.classList.contains('show');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
+    document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+    if (!open) {
+      panel.classList.add('show');
+      btn.classList.add('active');
+      if (name === 'history') renderHistory();
+    }
+  }
+
+  /* ── Templates ── */
+  function updateTplBtn() {
+    document.getElementById('tplBtn').textContent =
+      templates.length ? `Шаблоны (${templates.length})` : 'Нет шаблонов';
+  }
+  function toggleTemplates() {
+    const el = document.getElementById('tplList');
+    el.classList.toggle('hidden');
+    if (!el.classList.contains('hidden')) renderTemplates();
+  }
+  function renderTemplates() {
+    const el = document.getElementById('tplList');
+    if (!templates.length) {
+      el.innerHTML = '<p style="color:var(--stone-500);font-size:.75rem;text-align:center;padding:.5rem;font-style:italic">Нет сохранённых шаблонов</p>';
+      return;
+    }
+    el.innerHTML = templates.map(t => `
+      <div class="tpl-item" onclick="applyTemplate('${t.id}')">
+        <span>${t.name}</span>
+        <button class="del-btn" onclick="deleteTpl(event,'${t.id}')">✕</button>
+      </div>`).join('');
+  }
+  function saveTemplate() {
+    const name = prompt('Введите название шаблона:');
+    if (!name) return;
+    templates.push({
+      id: Date.now().toString(), name,
+      atomizer:  v('atomizer'),
+      delivery:  v('delivery'),
+      sticker:   v('sticker'),
+      packaging: v('packaging'),
+      others:    v('others'),
+    });
+    localStorage.setItem('perfume_templates', JSON.stringify(templates));
+    updateTplBtn();
+    showToast('Шаблон сохранён!');
+  }
+  function applyTemplate(id) {
+    const t = templates.find(x => x.id === id);
+    if (!t) return;
+    ['atomizer','delivery','sticker','packaging','others'].forEach(k =>
+      document.getElementById(k).value = t[k] || '');
+    document.getElementById('tplList').classList.add('hidden');
+    showToast('Шаблон применён!');
+  }
+  function deleteTpl(e, id) {
+    e.stopPropagation();
+    templates = templates.filter(t => t.id !== id);
+    localStorage.setItem('perfume_templates', JSON.stringify(templates));
+    updateTplBtn();
+    renderTemplates();
+  }
+
+  /* ── Helpers ── */
+  const v  = id => document.getElementById(id).value;
+  const n  = id => parseFloat(v(id)) || 0;
+
+  function roundPrice(price) {
+    const m = v('roundingMode');
+    if (m === '10') return Math.ceil(price / 10) * 10;
+    if (m === '50') return Math.ceil(price / 50) * 50;
+    if (m === '9')  return Math.floor(price / 10) * 10 + 9;
+    return price;
+  }
+
+  /* ── Calculate ── */
+  function calculate() {
+    const cpm    = n('costPerMl');
+    const loss   = n('lossFactor');
+    const mrk    = n('markup');
+    const atm    = n('atomizer');
+    const del    = n('delivery');
+    const stk    = n('sticker');
+    const pkg    = n('packaging');
+    const oth    = n('others');
+    const sSmall = n('surchargeSmall');
+    const sLarge = n('surchargeLarge');
+
+    const eCpm   = cpm * (1 + loss / 100);
+    const mCpm   = eCpm * (1 + mrk / 100);
+
+    results = [2, 3, 5, 10].map(vol => {
+      const surcharge  = vol < 5 ? sSmall : sLarge;
+      const raw        = mCpm * vol + atm + del + stk + pkg + surcharge;
+      const price      = roundPrice(raw);
+      const liquidCost = eCpm * vol;
+      const extrasCost = atm + del + stk + pkg + oth;
+      const profit     = price - (liquidCost + extrasCost);
+      return { volume: vol, price, profit };
+    });
+
+    renderResults();
+
+    /* history */
+    const item = { id: Date.now().toString(), name: v('perfumeName') || 'Без названия', timestamp: Date.now(), results };
+    history = [item, ...history.slice(0, 19)];
+    localStorage.setItem('perfume_history', JSON.stringify(history));
+  }
+
+  function renderResults() {
+    document.getElementById('resGrid').innerHTML = results.map(r => `
+      <div class="res-card">
+        <div class="res-vol">${r.volume} мл</div>
+        <div class="res-price">${Math.round(r.price)} ₽</div>
+        <div class="res-foot">
+          <span class="res-plabel">Прибыль:</span>
+          <span class="res-profit">+${Math.round(r.profit)} ₽</span>
+        </div>
+      </div>`).join('');
+    document.getElementById('results').classList.remove('hidden');
+  }
+
+  /* ── History ── */
+  function renderHistory() {
+    const el = document.getElementById('historyList');
+    if (!history.length) {
+      el.innerHTML = '<p style="color:var(--stone-500);font-size:.75rem;text-align:center;padding:1rem;font-style:italic">История пуста</p>';
+      return;
+    }
+    el.innerHTML = history.map(item => `
+      <div class="his-item" onclick="loadHistory('${item.id}')">
+        <span class="his-name">${item.name}</span>
+        <span class="his-date">${new Date(item.timestamp).toLocaleDateString('ru-RU')}</span>
+      </div>`).join('');
+  }
+  function loadHistory(id) {
+    const item = history.find(x => x.id === id);
+    if (!item) return;
+    results = item.results;
+    document.getElementById('perfumeName').value = item.name;
+    renderResults();
+    togglePanel('history');
+  }
+  function clearHistory() {
+    history = [];
+    localStorage.removeItem('perfume_history');
+    renderHistory();
+  }
+
+  /* ── Export ── */
+  function copyPrices() {
+    const name  = v('perfumeName') || 'Аромат';
+    const lines = results.map(r => `• ${r.volume} мл — ${Math.round(r.price)} ₽`).join('\n');
+    const text  = `${name}\n\n${lines}\n\nДоступно к заказу! 💌`;
+    navigator.clipboard.writeText(text).then(() => showToast('Скопировано в буфер!'));
+  }
+
+  async function exportImage() {
+    const grid = document.getElementById('resGrid');
+    if (!window.html2canvas) { showToast('Библиотека не загружена', true); return; }
+    try {
+      const canvas = await html2canvas(grid, { backgroundColor: '#0a0a0a', scale: 2, useCORS: true });
+      const a = document.createElement('a');
+      a.download = `${v('perfumeName') || 'price_list'}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+      showToast('Картинка сохранена!');
+    } catch {
+      showToast('Ошибка создания картинки', true);
+    }
+  }
+
+  /* ── Reset ── */
+  function resetForm() {
+    ['perfumeName','costPerMl','atomizer','delivery','sticker','packaging','others'].forEach(id =>
+      document.getElementById(id).value = '');
+    document.getElementById('markup').value = '20';
+    document.getElementById('results').classList.add('hidden');
+    results = [];
+  }
+
+  /* ── Toast ── */
+  function showToast(msg, err = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = err ? 'rgba(244,63,94,.92)' : 'rgba(16,185,129,.92)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  /* ── Init ── */
+  updateTplBtn();
+</script>
+</body>
+</html>
