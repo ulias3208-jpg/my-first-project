@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>НЕЙРО-ВИЗУАЛ — Интенсив по нейросетям</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0502;
+      --orange: #f97316;
+      --orange-hover: #ea6c0a;
+      --text: #ffffff;
+      --border: rgba(255,255,255,0.1);
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--orange); color: white; }
+
+    /* ── Атмосфера фона ── */
+    .bg-atmo {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .bg-atmo::before {
+      content: ''; position: absolute;
+      top: -10%; left: -10%; width: 40%; height: 40%;
+      background: rgba(154,52,18,0.2); filter: blur(120px); border-radius: 50%;
+    }
+    .bg-atmo::after {
+      content: ''; position: absolute;
+      bottom: -10%; right: -10%; width: 50%; height: 50%;
+      background: rgba(30,64,175,0.1); filter: blur(150px); border-radius: 50%;
+    }
+
+    /* ── Появление при скролле ── */
+    .fade-in {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── Контейнеры ── */
+    .container    { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .container-md { max-width: 1024px; margin: 0 auto; padding: 0 1.5rem; }
+    .container-sm { max-width: 896px;  margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      padding: 5rem 1.5rem 8rem;
+      text-align: center; overflow: hidden;
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 0.375rem 1rem; margin-bottom: 1.5rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(249,115,22,0.3);
+      background: rgba(249,115,22,0.1);
+      color: #fb923c; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .hero-title {
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 2rem;
+      background: linear-gradient(to bottom, #fff, rgba(255,255,255,0.5));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: 1.25rem; color: rgba(255,255,255,0.7);
+      max-width: 48rem; margin: 0 auto 3rem; line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.5rem;
+    }
+    @media (min-width: 640px) { .hero-actions { flex-direction: row; } }
+
+    /* ── Кнопки ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 1rem 2rem; background: var(--orange);
+      color: #000; font-weight: 700; font-size: 1rem;
+      border-radius: 0.75rem; text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--orange-hover); transform: translateY(-2px); }
+    .btn-primary svg { transition: transform 0.2s; }
+    .btn-primary:hover svg { transform: translateX(4px); }
+
+    .btn-primary-lg {
+      display: block; width: 100%; padding: 1.5rem;
+      background: var(--orange); color: #000;
+      font-weight: 900; font-size: 1.25rem;
+      border-radius: 1rem; text-decoration: none; text-align: center;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 10px 30px rgba(249,115,22,0.3);
+    }
+    .btn-primary-lg:hover {
+      background: var(--orange-hover); transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(249,115,22,0.4);
+    }
+
+    /* ── Аватары ── */
+    .avatar-group { display: flex; align-items: center; gap: 1rem; color: rgba(255,255,255,0.5); font-size: 0.875rem; }
+    .avatars { display: flex; }
+    .avatars img {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      border: 2px solid var(--bg); margin-left: -0.5rem;
+      background: #27272a; object-fit: cover;
+    }
+    .avatars img:first-child { margin-left: 0; }
+
+    /* ── Плавающие карточки ── */
+    .float-card {
+      position: absolute; display: none;
+      padding: 1rem; border-radius: 1rem;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    @media (min-width: 1024px) { .float-card { display: block; } }
+    .float-card-right {
+      top: 25%; right: 10%; transform: rotate(6deg);
+      animation: float1 4s ease-in-out infinite;
+    }
+    .float-card-left {
+      bottom: 25%; left: 10%; transform: rotate(-12deg);
+      animation: float2 5s ease-in-out infinite 0.5s;
+    }
+    .float-card img { border-radius: 0.5rem; display: block; background: #27272a; }
+    .float-card-label {
+      display: flex; align-items: center; gap: 0.375rem;
+      margin-top: 0.75rem; font-size: 0.75rem; color: rgba(255,255,255,0.4);
+    }
+    @keyframes float1 {
+      0%,100% { transform: rotate(6deg) translateY(0); }
+      50% { transform: rotate(6deg) translateY(-20px); }
+    }
+    @keyframes float2 {
+      0%,100% { transform: rotate(-12deg) translateY(0); }
+      50% { transform: rotate(-12deg) translateY(20px); }
+    }
+
+    /* ── Цитата ── */
+    .mission {
+      padding: 5rem 1.5rem; position: relative; z-index: 1; text-align: center;
+    }
+    .mission-quote {
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-weight: 300; font-style: italic;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: rgba(255,255,255,0.9); line-height: 1.6;
+      max-width: 56rem; margin: 0 auto;
+    }
+    .mission-divider {
+      width: 6rem; height: 1px; margin: 2rem auto 0;
+      background: linear-gradient(to right, transparent, var(--orange), transparent);
+      opacity: 0.5;
+    }
+
+    /* ── Секция альтернативный фон ── */
+    .section-alt {
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      position: relative; z-index: 1;
+    }
+    .section-alt-inner { padding: 6rem 1.5rem; max-width: 1280px; margin: 0 auto; }
+
+    .section-pad { padding: 8rem 1.5rem; position: relative; z-index: 1; }
+
+    /* ── Две колонки ── */
+    .two-col { display: grid; grid-template-columns: 1fr; gap: 4rem; align-items: center; }
+    @media (min-width: 1024px) { .two-col { grid-template-columns: 1fr 1fr; } }
+
+    .section-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 2rem; letter-spacing: -0.02em; }
+
+    /* ── Список фич ── */
+    .feature-list { display: flex; flex-direction: column; gap: 1.5rem; }
+    .feature-item {
+      display: flex; gap: 1rem; padding: 1rem; border-radius: 1rem;
+      border: 1px solid transparent;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .feature-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); transform: translateX(10px); }
+    .feature-icon {
+      width: 3rem; height: 3rem; border-radius: 0.75rem;
+      background: rgba(249,115,22,0.2);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .feature-title { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.25rem; }
+    .feature-text { color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+    /* ── CTA-блок ── */
+    .cta-box {
+      border-radius: 1.5rem;
+      background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(59,130,246,0.2));
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 3rem 2rem;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+    }
+    .cta-box-icon {
+      width: 6rem; height: 6rem; border-radius: 50%;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 50px rgba(249,115,22,0.4);
+    }
+    .cta-box h3 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem; }
+    .cta-box p { font-size: 1.125rem; color: rgba(255,255,255,0.7); }
+
+    /* ── Заголовок секции ── */
+    .section-header { text-align: center; margin-bottom: 5rem; }
+    .section-header h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+    .section-header p { color: rgba(255,255,255,0.5); font-size: 1.125rem; }
+
+    /* ── Аккордеон уроков ── */
+    .lessons-list { display: flex; flex-direction: column; gap: 1rem; }
+    .lesson {
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem;
+      overflow: hidden; transition: background 0.3s, border-color 0.3s;
+    }
+    .lesson.open { background: rgba(255,255,255,0.05); border-color: rgba(249,115,22,0.3); }
+    .lesson-header {
+      width: 100%; padding: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: none; border: none; color: white; cursor: pointer; text-align: left; gap: 1rem;
+    }
+    .lesson-number {
+      font-family: monospace; font-size: 1.875rem; font-weight: 700;
+      color: rgba(255,255,255,0.2); transition: color 0.2s; flex-shrink: 0; min-width: 3rem;
+    }
+    .lesson.open .lesson-number { color: rgba(249,115,22,0.4); }
+    .lesson-title { font-size: 1.125rem; font-weight: 700; transition: color 0.2s; flex: 1; }
+    .lesson-header:hover .lesson-title { color: #fb923c; }
+    .lesson.open .lesson-title { color: #fb923c; }
+    .lesson-chevron {
+      width: 1.5rem; height: 1.5rem; color: rgba(255,255,255,0.3);
+      transition: transform 0.3s, color 0.3s; flex-shrink: 0;
+    }
+    .lesson.open .lesson-chevron { transform: rotate(180deg); color: #fb923c; }
+    .lesson-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .lesson.open .lesson-body { max-height: 600px; opacity: 1; }
+    .lesson-body-inner { padding: 0.5rem 1.5rem 2rem; border-top: 1px solid rgba(255,255,255,0.05); }
+    .lesson-content-title { font-weight: 600; color: white; margin-bottom: 0.5rem; }
+    .lesson-content-text { color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 1.5rem; }
+    .lesson-practice {
+      padding: 1rem; border-radius: 0.75rem;
+      background: rgba(249,115,22,0.05); border: 1px solid rgba(249,115,22,0.1);
+      margin-bottom: 1.5rem;
+    }
+    .lesson-practice-title {
+      font-weight: 700; color: #fb923c; margin-bottom: 0.25rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .lesson-practice-text { color: rgba(255,255,255,0.7); }
+    .lesson-result { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.875rem; }
+    .lesson-result-label { font-weight: 700; color: #34d399; }
+    .lesson-result-text { color: rgba(255,255,255,0.6); }
+
+    /* ── Спецкарточки (онлайн-созвон, бонус) ── */
+    .special-card {
+      padding: 2rem; border-radius: 1.5rem; margin-top: 1.5rem;
+      display: flex; flex-direction: column; gap: 2rem; align-items: center;
+    }
+    @media (min-width: 768px) { .special-card { flex-direction: row; } }
+    .special-card-orange { background: linear-gradient(to right, rgba(249,115,22,0.1), transparent); border: 1px solid rgba(249,115,22,0.2); }
+    .special-card-blue   { background: linear-gradient(to right, rgba(59,130,246,0.1), transparent);  border: 1px solid rgba(59,130,246,0.2); }
+    .special-card-icon {
+      width: 5rem; height: 5rem; border-radius: 1rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .special-card-icon-orange { background: var(--orange); box-shadow: 0 10px 30px rgba(249,115,22,0.2); }
+    .special-card-icon-blue   { background: #3b82f6;       box-shadow: 0 10px 30px rgba(59,130,246,0.2); }
+    .special-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .special-card p  { color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+    /* ── Кураторы ── */
+    .curators-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+    @media (min-width: 768px) { .curators-grid { grid-template-columns: 1fr 1fr; } }
+
+    .curator-card {
+      padding: 2rem; border-radius: 1.5rem;
+      background: rgba(24,24,27,0.5); border: 1px solid rgba(255,255,255,0.05);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2rem; text-align: center;
+      transition: transform 0.3s;
+    }
+    @media (min-width: 768px) { .curator-card { flex-direction: row; text-align: left; align-items: center; } }
+    .curator-card:hover { transform: translateY(-10px); }
+    .curator-photo {
+      width: 12rem; height: 16rem; border-radius: 1rem; overflow: hidden; flex-shrink: 0;
+      background: #27272a; border: 1px solid rgba(249,115,22,0.2);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .curator-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .curator-name { font-size: 1.875rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .curator-role { color: #fb923c; font-weight: 600; font-size: 1.125rem; margin-bottom: 1rem; line-height: 1.4; }
+    .curator-bio  { color: rgba(255,255,255,0.6); line-height: 1.7; font-size: 1.125rem; font-weight: 300; }
+
+    /* ── Отзывы ── */
+    .reviews-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+    @media (min-width: 768px) { .reviews-grid { grid-template-columns: repeat(3, 1fr); } }
+    .review-card {
+      padding: 2rem; border-radius: 1.5rem;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      display: flex; flex-direction: column;
+    }
+    .review-stars { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; }
+    .review-text { font-size: 1.125rem; font-style: italic; color: rgba(255,255,255,0.8); margin-bottom: 2rem; flex: 1; line-height: 1.6; }
+    .review-author { display: flex; align-items: center; gap: 1rem; }
+    .review-avatar { width: 3rem; height: 3rem; border-radius: 50%; overflow: hidden; background: #27272a; }
+    .review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .review-name { font-weight: 700; }
+    .review-role { font-size: 0.875rem; color: rgba(255,255,255,0.4); }
+
+    /* ── Цена ── */
+    .pricing-section { padding: 8rem 1.5rem; position: relative; overflow: hidden; z-index: 1; }
+    .pricing-bg { position: absolute; inset: 0; background: rgba(249,115,22,0.05); pointer-events: none; }
+    .pricing-card {
+      padding: 3rem; border-radius: 2.5rem;
+      background: linear-gradient(to bottom, #18181b, #000);
+      border: 1px solid rgba(249,115,22,0.3);
+      box-shadow: 0 0 100px rgba(249,115,22,0.1);
+      text-align: center; max-width: 48rem; margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+    .pricing-card > h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; }
+    .pricing-card > p { color: rgba(255,255,255,0.5); margin-bottom: 3rem; font-size: 1.125rem; }
+    .price { margin-bottom: 3rem; }
+    .price-amount { font-size: clamp(3rem, 8vw, 4.5rem); font-weight: 900; letter-spacing: -0.04em; }
+    .price-currency { font-size: 1.5rem; font-weight: 700; color: rgba(255,255,255,0.4); margin-left: 0.5rem; }
+    .pricing-list {
+      list-style: none; max-width: 20rem; margin: 0 auto 3rem;
+      text-align: left; display: flex; flex-direction: column; gap: 1rem;
+    }
+    .pricing-list li { display: flex; align-items: center; gap: 0.75rem; color: rgba(255,255,255,0.7); }
+    .pricing-note { margin-top: 1.5rem; font-size: 0.875rem; color: rgba(255,255,255,0.3); font-style: italic; }
+
+    /* ── Футер ── */
+    footer { padding: 3rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 1; }
+    .footer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 2rem; text-align: center;
+      color: rgba(255,255,255,0.3); font-size: 0.875rem;
+    }
+    @media (min-width: 768px) { .footer-inner { flex-direction: row; justify-content: space-between; } }
+    .footer-brand { font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: -0.04em; font-size: 1.25rem; }
+  </style>
+</head>
+<body>
+
+<div class="bg-atmo"></div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <div class="container fade-in">
+    <span class="hero-badge">Интенсив по нейросетям</span>
+    <h1 class="hero-title">НЕЙРО-ВИЗУАЛ</h1>
+    <p class="hero-desc">
+      Интенсив «Нейро-креатив: от промпта до анимации за 2 недели».
+      За 8 уроков пройди путь от новичка до создателя профессиональных ИИ-креативов.
+    </p>
+    <div class="hero-actions">
+      <a href="https://t.me/samarina_parfum" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        <span>ЗАПИСАТЬСЯ НА КУРС</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <div class="avatar-group">
+        <div class="avatars">
+          <img src="https://picsum.photos/seed/user1/100/100" alt="User" referrerpolicy="no-referrer" />
+          <img src="https://picsum.photos/seed/user2/100/100" alt="User" referrerpolicy="no-referrer" />
+          <img src="https://picsum.photos/seed/user3/100/100" alt="User" referrerpolicy="no-referrer" />
+        </div>
+        <span>Присоединились уже 150+ участников</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Плавающие карточки -->
+  <div class="float-card float-card-right">
+    <img src="https://picsum.photos/seed/ai1/192/128" alt="AI Art" width="192" height="128" referrerpolicy="no-referrer" />
+    <div class="float-card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span>Generated by Flux</span>
+    </div>
+  </div>
+  <div class="float-card float-card-left">
+    <img src="https://picsum.photos/seed/ai2/160/224" alt="AI Art" width="160" height="224" referrerpolicy="no-referrer" />
+    <div class="float-card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      <span>Animated by Kling</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ЦИТАТА ═══════════════ -->
+<section class="mission fade-in">
+  <div class="container-md">
+    <blockquote class="mission-quote">
+      «Где идея превращается в визуал, а визуал — в впечатление.»
+    </blockquote>
+    <div class="mission-divider"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ ЧТО ПОЛУЧИТЕ ═══════════════ -->
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="two-col">
+      <div>
+        <h2 class="section-title fade-in">Что вы получите?</h2>
+        <div class="feature-list">
+          <div class="feature-item fade-in">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">Формат обучения</div>
+              <div class="feature-text">8 пошаговых уроков, 1 живой онлайн-разбор и бонусный PDF-чек-лист.</div>
+            </div>
+          </div>
+          <div class="feature-item fade-in">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">Понятная система</div>
+              <div class="feature-text">Как из текста получать визуальные концепты любой сложности.</div>
+            </div>
+          </div>
+          <div class="feature-item fade-in">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">Первые работы</div>
+              <div class="feature-text">Свои первые серии картинок и анимаций уже в процессе обучения.</div>
+            </div>
+          </div>
+          <div class="feature-item fade-in">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">База сервисов</div>
+              <div class="feature-text">Понимание, в каких сервисах и для каких задач работать.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="cta-box fade-in">
+          <div class="cta-box-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="black" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <h3>Готовая база</h3>
+          <p>Чтобы делать креативы для себя или клиентов на профессиональном уровне.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ПРОГРАММА ═══════════════ -->
+<section class="section-pad" id="program">
+  <div class="container-sm">
+    <div class="section-header fade-in">
+      <h2>Программа интенсива</h2>
+      <p>8 уроков погружения в мир нейро-креатива</p>
+    </div>
+    <div class="lessons-list" id="lessonsList"></div>
+
+    <!-- Онлайн-созвон -->
+    <div class="special-card special-card-orange fade-in" style="margin-top:3rem;">
+      <div class="special-card-icon special-card-icon-orange">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <h3>Онлайн-созвон: разбор и обратная связь</h3>
+        <p>Живая встреча в конце интенсива. Разбор ваших работ, ответы на вопросы по технике и креативу, рекомендации по дальнейшему развитию и оформлению соцсетей.</p>
+      </div>
+    </div>
+
+    <!-- Бонус -->
+    <div class="special-card special-card-blue fade-in">
+      <div class="special-card-icon special-card-icon-blue">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+      </div>
+      <div>
+        <h3>Бонус: PDF-чек-лист «Техническая база нейрокреатора»</h3>
+        <p>Всё об оплате сервисов, настройке аккаунтов, музыке без авторских прав и лайфхаки по монтажу и визуалу.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ КУРАТОРЫ ═══════════════ -->
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-header fade-in">
+      <h2>Кураторы интенсива</h2>
+      <p>Ваши проводники в мир нейросетей</p>
+    </div>
+    <div class="curators-grid">
+      <div class="curator-card fade-in">
+        <div class="curator-photo">
+          <img src="https://i.postimg.cc/YCvCfBm0/photo-2026-02-23-14-42-07.jpg" alt="Самарина Юлия" referrerpolicy="no-referrer" />
+        </div>
+        <div>
+          <div class="curator-name">Самарина Юлия</div>
+          <div class="curator-role">AI-ментор для экспертов и брендов, вайбкодер.</div>
+          <div class="curator-bio">Помогает выстраивать рост бизнеса через автоматизацию процессов, оптимизацию работы и создание цифровых решений.</div>
+        </div>
+      </div>
+      <div class="curator-card fade-in">
+        <div class="curator-photo">
+          <img src="https://i.postimg.cc/m2xv6xqz/photo-2024-08-20-12-00-15.jpg" alt="Короткова Юлия" referrerpolicy="no-referrer" />
+        </div>
+        <div>
+          <div class="curator-name">Короткова Юлия</div>
+          <div class="curator-role">Нейромаркетинг</div>
+          <div class="curator-bio">Специалист по видео-креативам на нейросетях. Эксперт в области нейромаркетинга.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ОТЗЫВЫ ═══════════════ -->
+<section class="section-pad">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>Отзывы участников</h2>
+      <p>Результаты тех, кто уже прошел обучение</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card fade-in">
+        <div class="review-stars">
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+        </div>
+        <p class="review-text">"Интенсив перевернул моё представление о контенте. Теперь я делаю креативы для клиентов в 5 раз быстрее!"</p>
+        <div class="review-author">
+          <div class="review-avatar"><img src="https://picsum.photos/seed/rev0/100/100" alt="Анна С." referrerpolicy="no-referrer" /></div>
+          <div>
+            <div class="review-name">Анна С.</div>
+            <div class="review-role">SMM-специалист</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card fade-in">
+        <div class="review-stars">
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+        </div>
+        <p class="review-text">"Syntx — это открытие. Очень удобно иметь всё в одном месте. Уроки максимально практичные."</p>
+        <div class="review-author">
+          <div class="review-avatar"><img src="https://picsum.photos/seed/rev1/100/100" alt="Михаил В." referrerpolicy="no-referrer" /></div>
+          <div>
+            <div class="review-name">Михаил В.</div>
+            <div class="review-role">Дизайнер</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card fade-in">
+        <div class="review-stars">
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#f97316" stroke="none"/></svg>
+        </div>
+        <p class="review-text">"Никогда не думала, что смогу сама анимировать свои фото. Kling — это просто магия какая-то!"</p>
+        <div class="review-author">
+          <div class="review-avatar"><img src="https://picsum.photos/seed/rev2/100/100" alt="Елена К." referrerpolicy="no-referrer" /></div>
+          <div>
+            <div class="review-name">Елена К.</div>
+            <div class="review-role">Блогер</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ЦЕНА ═══════════════ -->
+<section class="pricing-section" id="pricing">
+  <div class="pricing-bg"></div>
+  <div class="pricing-card fade-in">
+    <h2>Готовы начать?</h2>
+    <p>Занимайте свое место на интенсиве по самой выгодной цене</p>
+    <div class="price">
+      <span class="price-amount">20 000</span>
+      <span class="price-currency">₽</span>
+    </div>
+    <ul class="pricing-list">
+      <li>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Все 8 уроков в записи
+      </li>
+      <li>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Методички к каждому уроку
+      </li>
+      <li>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Участие в онлайн-разборе
+      </li>
+      <li>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Бонусный PDF-чек-лист
+      </li>
+      <li>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Доступ в закрытый чат
+      </li>
+    </ul>
+    <a href="https://t.me/samarina_parfum" target="_blank" rel="noopener noreferrer" class="btn-primary-lg">
+      ЗАПИСАТЬСЯ СЕЙЧАС
+    </a>
+    <p class="pricing-note">Оплата возможна частями</p>
+  </div>
+</section>
+
+<!-- ═══════════════ ФУТЕР ═══════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">НЕЙРО-ВИЗУАЛ</div>
+    <div>© 2026 Все права защищены</div>
+  </div>
+</footer>
+
+<script>
+  const lessons = [
+    {
+      number: 1,
+      title: "Обзор возможностей GPT и настройка личного кабинета",
+      content: "Первые шаги в мире ИИ. Регистрация и базовые настройки для эффективной работы."
+    },
+    {
+      number: 2,
+      title: "GPT как креативный двигатель: промпты для будущих картинок",
+      content: "Как правильно формулировать задачу: от «сделай красиво» к внятному ТЗ. Структура промпта: объект, стиль, эмоция, фон, свет, детали.",
+      practice: "Создание 3-5 промптов под свои задачи.",
+      result: "Готовый набор промптов для визуальных нейросетей."
+    },
+    {
+      number: 3,
+      title: "Агрегатор Syntx: одна точка входа в разные нейросети",
+      content: "Обзор интерфейса, логика работы через агрегатор для экономии времени. Выбор моделей: реализм, иллюстрация, fashion, product, арт.",
+      practice: "Прогон промптов через разные модели для сравнения стилей.",
+      result: "Первые тестовые визуалы через Syntx."
+    },
+    {
+      number: 4,
+      title: "Higgsfield: создание картинок во Flux, Nana Banana, Higgsfield, Seedream",
+      content: "Сравнение моделей, выбор разрешения и формата (9:16, 1:1). Работа с upscaling и исправление типичных ошибок (руки, свет).",
+      practice: "Генерация серии из 3–5 удачных кадров.",
+      result: "Понимание, какой движок использовать под конкретную задачу."
+    },
+    {
+      number: 5,
+      title: "Простая анимация: оживляем картинки (Kling, Higgsfield, VEO)",
+      content: "Чем видео-креатив отличается от статики. Инструменты Kling (киношные сцены) и Higgsfield (оживление картинок).",
+      practice: "Создание 2–3 коротких анимаций из своих лучших картинок.",
+      result: "Готовые микро-видеокреативы для соцсетей."
+    },
+    {
+      number: 6,
+      title: "Создание серии анимационных видео для единого ролика",
+      content: "Работа над последовательностью кадров и поддержание единого стиля в анимации."
+    },
+    {
+      number: 7,
+      title: "Базовый монтаж в CAPCUT",
+      content: "Сборка кусочков анимации в полноценный, динамичный ролик."
+    },
+    {
+      number: 8,
+      title: "Создание презентации в GAMMA",
+      content: "Упаковка ваших результатов в профессиональную презентацию с помощью ИИ."
+    }
+  ];
+
+  // Генерируем уроки
+  const list = document.getElementById('lessonsList');
+  lessons.forEach(lesson => {
+    const el = document.createElement('div');
+    el.className = 'lesson fade-in';
+    el.innerHTML = `
+      <button class="lesson-header" onclick="toggleLesson(this)">
+        <span class="lesson-number">${String(lesson.number).padStart(2, '0')}</span>
+        <span class="lesson-title">${lesson.title}</span>
+        <svg class="lesson-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="lesson-body">
+        <div class="lesson-body-inner">
+          <p class="lesson-content-title">Что внутри:</p>
+          <p class="lesson-content-text">${lesson.content}</p>
+          ${lesson.practice ? `
+            <div class="lesson-practice">
+              <div class="lesson-practice-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Практика:
+              </div>
+              <p class="lesson-practice-text">${lesson.practice}</p>
+            </div>
+          ` : ''}
+          ${lesson.result ? `
+            <div class="lesson-result">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div>
+                <span class="lesson-result-label">На выходе: </span>
+                <span class="lesson-result-text">${lesson.result}</span>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+
+  // Аккордеон
+  function toggleLesson(btn) {
+    const lesson = btn.closest('.lesson');
+    const isOpen = lesson.classList.contains('open');
+    document.querySelectorAll('.lesson.open').forEach(l => l.classList.remove('open'));
+    if (!isOpen) lesson.classList.add('open');
+  }
+
+  // Анимация появления при скролле
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
