@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мария Карташова — Nail Master</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --gold:   #c9a227;
+      --gold-l: #f0d060;
+      --pink:   #e898b0;
+      --lav:    #b890d0;
+      --blue:   #4ac8f0;
+      --bg:     #060c16;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 16px;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ────────────────────────── */
+    .scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      animation: breathe 14s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.1); opacity: .8; }
+    }
+    .orb-a {
+      width:520px; height:520px; top:-130px; left:-130px;
+      background: radial-gradient(circle, rgba(40,140,220,.28), rgba(20,60,140,.10) 60%, transparent);
+      animation-duration:16s;
+    }
+    .orb-b {
+      width:420px; height:420px; bottom:-90px; right:-90px;
+      background: radial-gradient(circle, rgba(60,200,240,.22), rgba(20,100,180,.10) 60%, transparent);
+      animation-duration:11s; animation-delay:-5s;
+    }
+    .orb-c {
+      width:280px; height:280px; top:40%; right:4%;
+      background: radial-gradient(circle, rgba(80,180,255,.16), transparent 70%);
+      animation-duration:19s; animation-delay:-3s;
+    }
+    .orb-d {
+      width:200px; height:200px; top:16%; left:3%;
+      background: radial-gradient(circle, rgba(100,220,255,.12), transparent 70%);
+      animation-duration:22s; animation-delay:-9s;
+    }
+    .orb-e {
+      width:350px; height:350px; top:55%; left:-80px;
+      background: radial-gradient(circle, rgba(30,120,200,.18), transparent 70%);
+      animation-duration:17s; animation-delay:-7s;
+    }
+
+    /* floating nail tips */
+    .nail-tip {
+      position: absolute;
+      animation: floatNail var(--dur) var(--del) ease-in-out infinite;
+    }
+    @keyframes floatNail {
+      0%,100% { transform: translateY(0)          rotate(var(--rot,0deg)) scale(1);    }
+      50%      { transform: translateY(var(--dy,-12px)) rotate(calc(var(--rot,0deg) + 8deg)) scale(1.05); }
+    }
+
+    /* twinkling sparkles */
+    .sp {
+      position: absolute;
+      animation: glitter var(--dur) var(--del) ease-in-out infinite;
+    }
+    @keyframes glitter {
+      0%,100% { opacity:0; transform:scale(.2) rotate(0deg);   }
+      40%,60%  { opacity:var(--mo,.7); transform:scale(1) rotate(180deg); }
+    }
+
+    /* ── CARD ───────────────────────────────── */
+    .card {
+      position: relative;
+      z-index: 1;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      animation: fadeUp .9s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(28px); }
+      to   { opacity:1; transform:translateY(0);    }
+    }
+
+    /* ── PHOTO ──────────────────────────────── */
+    .photo-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    .photo-glow {
+      position: absolute;
+      inset: -22px;
+      border-radius: 50%;
+      background: conic-gradient(#c9a227, #e898b0, #b890d0, #c9a227);
+      filter: blur(28px);
+      opacity: .32;
+    }
+
+    .photo-ring {
+      position: relative;
+      width: 206px; height: 206px;
+      border-radius: 50%;
+      padding: 3px;
+      background: conic-gradient(#c9a227 0deg, #e898b0 120deg, #b890d0 240deg, #c9a227 360deg);
+      box-shadow: 0 0 36px rgba(201,162,39,.22), 0 0 70px rgba(184,144,208,.12);
+    }
+    .photo-bg {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: #fff;
+      padding: 6px;
+    }
+    .photo-img {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 10%;
+      display: block;
+    }
+
+    /* corner star ornaments */
+    .sd { position: absolute; }
+    .sd-tl { top:-4px;  left:6px;  }
+    .sd-tr { top:-4px;  right:6px; }
+    .sd-bl { bottom:-4px; left:6px;  }
+    .sd-br { bottom:-4px; right:6px; }
+
+    /* ── NAME & ROLE ────────────────────────── */
+    .name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 8vw, 3.2rem);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1.5px;
+      line-height: 1.1;
+      margin-bottom: 9px;
+      text-shadow: 0 0 50px rgba(201,162,39,.22);
+    }
+    .role {
+      font-size: .75rem;
+      font-weight: 400;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    /* ── DIVIDER ────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .dl { flex:1; height:1px; background:linear-gradient(to right, transparent, rgba(201,162,39,.42)); }
+    .dr { flex:1; height:1px; background:linear-gradient(to left,  transparent, rgba(201,162,39,.42)); }
+    .gems { display:flex; gap:4px; align-items:center; }
+    .gem  { display:block; width:5px; height:5px; background:var(--gold); transform:rotate(45deg); }
+    .gem.lg { width:8px; height:8px; }
+
+    /* ── AWARDS ─────────────────────────────── */
+    .awards {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(201,162,39,.13);
+      border-radius: 18px;
+      padding: 22px 20px 20px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+    .awards::before {
+      content:'';
+      position:absolute;
+      top:0; left:14%; right:14%;
+      height:1px;
+      background:linear-gradient(to right, transparent, rgba(201,162,39,.48), transparent);
+    }
+    .awards-h {
+      font-size: 1.14rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .aw {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-bottom: 11px;
+      text-align: left;
+    }
+    .aw:last-child { margin-bottom:0; }
+    .aw svg { flex-shrink:0; margin-top:2px; }
+    .aw span {
+      font-size: 1.54rem;
+      color: rgba(255,255,255,.78);
+      line-height: 1.55;
+      font-weight: 300;
+    }
+    .aw span b { color:rgba(255,255,255,.95); font-weight:500; }
+
+    /* ── BUTTONS ────────────────────────────── */
+    .btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: .3px;
+      border: 1.5px solid rgba(60,180,255,.5);
+      background: rgba(30,120,220,.15);
+      color: #60d8ff;
+      box-shadow: 0 0 18px rgba(60,180,255,.25), inset 0 0 20px rgba(60,180,255,.06);
+      transition: transform .25s, box-shadow .25s, border-color .25s, background .25s;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      border-color: rgba(60,200,255,.9);
+      background: rgba(40,150,240,.22);
+      box-shadow: 0 0 32px rgba(60,200,255,.5), 0 0 60px rgba(60,180,255,.2), inset 0 0 20px rgba(60,180,255,.1);
+      color: #aaeeff;
+    }
+    .bi { width:24px; height:24px; flex-shrink:0; }
+    .bl { flex:1; text-align:left; }
+    .bs { font-size:.72rem; opacity:.5; }
+
+    .btn-tel { }
+    .btn-tg  { }
+    .btn-bk  { }
+    .btn-vk  { }
+
+    /* ── FOOTER ─────────────────────────────── */
+    .footer {
+      font-size: .55rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.13);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ BACKGROUND ═══════════════════════════════ -->
+<div class="scene">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+  <div class="orb orb-d"></div>
+  <div class="orb orb-e"></div>
+
+  <!-- Nail tip silhouettes -->
+  <svg class="nail-tip" style="left:6%;top:11%;--dur:9s;--del:-2s;--rot:-20deg;--dy:-10px;opacity:.07;" width="32" height="48" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#b890d0"/></svg>
+  <svg class="nail-tip" style="left:88%;top:7%;--dur:11s;--del:-5s;--rot:15deg;--dy:-14px;opacity:.06;" width="24" height="36" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#c9a227"/></svg>
+  <svg class="nail-tip" style="left:3%;top:54%;--dur:13s;--del:-1s;--rot:30deg;--dy:-8px;opacity:.06;" width="20" height="30" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#e898b0"/></svg>
+  <svg class="nail-tip" style="left:91%;top:45%;--dur:10s;--del:-7s;--rot:-10deg;--dy:-12px;opacity:.07;" width="28" height="42" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#b890d0"/></svg>
+  <svg class="nail-tip" style="left:14%;top:85%;--dur:14s;--del:-4s;--rot:45deg;--dy:-6px;opacity:.05;" width="22" height="33" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#c9a227"/></svg>
+  <svg class="nail-tip" style="left:82%;top:80%;--dur:8s;--del:-6s;--rot:-35deg;--dy:-15px;opacity:.06;" width="26" height="39" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#e898b0"/></svg>
+  <svg class="nail-tip" style="left:49%;top:2%;--dur:12s;--del:-9s;--rot:5deg;--dy:-10px;opacity:.05;" width="18" height="27" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#b890d0"/></svg>
+  <svg class="nail-tip" style="left:70%;top:92%;--dur:16s;--del:-3s;--rot:-25deg;--dy:-8px;opacity:.05;" width="20" height="30" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#c9a227"/></svg>
+  <svg class="nail-tip" style="left:36%;top:97%;--dur:10s;--del:-11s;--rot:60deg;--dy:-7px;opacity:.05;" width="16" height="24" viewBox="0 0 30 44"><path d="M15 44 Q0 30 3 12 Q6 0 15 0 Q24 0 27 12 Q30 30 15 44Z" fill="#e898b0"/></svg>
+
+  <!-- Sparkle stars -->
+  <svg class="sp" style="left:11%;top:23%;--dur:4s;--del:0s;--mo:.6;" width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+  <svg class="sp" style="left:86%;top:19%;--dur:5s;--del:-1s;--mo:.5;" width="10" height="10" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#e898b0"/></svg>
+  <svg class="sp" style="left:24%;top:68%;--dur:6s;--del:-2s;--mo:.4;" width="12" height="12" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#b890d0"/></svg>
+  <svg class="sp" style="left:76%;top:63%;--dur:4.5s;--del:-3s;--mo:.55;" width="16" height="16" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+  <svg class="sp" style="left:44%;top:91%;--dur:7s;--del:-1.5s;--mo:.4;" width="10" height="10" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#e898b0"/></svg>
+  <svg class="sp" style="left:61%;top:5%;--dur:5.5s;--del:-4s;--mo:.5;" width="12" height="12" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#b890d0"/></svg>
+  <svg class="sp" style="left:7%;top:41%;--dur:8s;--del:-2.5s;--mo:.35;" width="8" height="8" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+  <svg class="sp" style="left:93%;top:71%;--dur:6s;--del:-.5s;--mo:.45;" width="10" height="10" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#e898b0"/></svg>
+  <svg class="sp" style="left:53%;top:48%;--dur:9s;--del:-6s;--mo:.25;" width="8" height="8" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#b890d0"/></svg>
+
+  <!-- Floating diamonds -->
+  <svg class="nail-tip" style="left:34%;top:15%;--dur:11s;--del:-3s;--rot:0deg;--dy:-8px;opacity:.05;" width="18" height="18" viewBox="0 0 20 20"><polygon points="10,0 20,10 10,20 0,10" fill="#b890d0"/></svg>
+  <svg class="nail-tip" style="left:66%;top:76%;--dur:13s;--del:-7s;--rot:0deg;--dy:-10px;opacity:.05;" width="14" height="14" viewBox="0 0 20 20"><polygon points="10,0 20,10 10,20 0,10" fill="#c9a227"/></svg>
+  <svg class="nail-tip" style="left:5%;top:76%;--dur:15s;--del:-4s;--rot:0deg;--dy:-6px;opacity:.04;" width="22" height="22" viewBox="0 0 20 20"><polygon points="10,0 20,10 10,20 0,10" fill="#e898b0"/></svg>
+  <svg class="nail-tip" style="left:78%;top:30%;--dur:9s;--del:-8s;--rot:0deg;--dy:-9px;opacity:.04;" width="16" height="16" viewBox="0 0 20 20"><polygon points="10,0 20,10 10,20 0,10" fill="#b890d0"/></svg>
+</div>
+
+<!-- ═══ CARD ═══════════════════════════════════════ -->
+<main class="card">
+
+  <!-- Photo -->
+  <div class="photo-wrap">
+    <div class="photo-glow"></div>
+    <div class="photo-ring">
+      <div class="photo-bg">
+        <img src="Карташова.jpg" alt="Мария Карташова" class="photo-img" loading="eager">
+      </div>
+    </div>
+    <!-- corner ornaments -->
+    <svg class="sd sd-tl" width="18" height="18" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227" opacity=".85"/></svg>
+    <svg class="sd sd-tr" width="18" height="18" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227" opacity=".85"/></svg>
+    <svg class="sd sd-bl" width="13" height="13" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227" opacity=".55"/></svg>
+    <svg class="sd sd-br" width="13" height="13" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227" opacity=".55"/></svg>
+  </div>
+
+  <!-- Name -->
+  <h1 class="name">Мария Карташова</h1>
+  <p class="role">Nail Master &nbsp;·&nbsp; Инструктор</p>
+
+  <!-- Divider -->
+  <div class="divider">
+    <div class="dl"></div>
+    <div class="gems"><span class="gem"></span><span class="gem lg"></span><span class="gem"></span></div>
+    <div class="dr"></div>
+  </div>
+
+  <!-- Awards -->
+  <div class="awards">
+    <div class="awards-h">✦ Достижения ✦</div>
+
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+      <span>Инструктор с правом преподавания</span>
+    </div>
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+      <span>Победитель номинации <b>Beauty Expert 2025</b> · г. Москва</span>
+    </div>
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+      <span>Победитель премии <b>New World People 2025</b> «Лучший Топ мастер по маникюру» · г. Саратов</span>
+    </div>
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+      <span>Победитель чемпионата России <b>«Город семи ветров»</b> · г. Ульяновск</span>
+    </div>
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+      <span>Победитель международного чемпионата <b>Moscow Beauty Universe III</b> · г. Москва</span>
+    </div>
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 0L11.8 8.2L20 10L11.8 11.8L10 20L8.2 11.8L0 10L8.2 8.2Z" fill="#c9a227"/></svg>
+      <span>Победитель чемпионата России <b>Premium Beauty Star</b> · г. Самара</span>
+    </div>
+    <div class="aw">
+      <svg width="14" height="14" viewBox="0 0 20 20"><polygon points="10,1 13,7 20,7.5 15,12 16.5,19 10,15.5 3.5,19 5,12 0,7.5 7,7" fill="#b890d0"/></svg>
+      <span>Почётный судья Международного чемпионата <b>«Топ Бьюти Чемпионат»</b></span>
+    </div>
+  </div>
+
+  <!-- Contact buttons -->
+  <div class="btns">
+
+    <a href="tel:+79869990629" class="btn btn-tel">
+      <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 012 2.18 2 2 0 014 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14z"/>
+      </svg>
+      <span class="bl">Позвонить мне</span>
+    </a>
+
+    <a href="https://t.me/Mart_1988" target="_blank" rel="noopener" class="btn btn-tg">
+      <svg class="bi" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.247-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L6.875 13.64l-2.96-.924c-.644-.204-.657-.644.136-.953l11.57-4.46c.537-.195 1.006.13.829.941h.112z"/>
+      </svg>
+      <span class="bl">Telegram-канал</span>
+    </a>
+
+    <a href="https://dikidi.net/1662251" target="_blank" rel="noopener" class="btn btn-bk">
+      <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8"  y1="2" x2="8"  y2="6"/>
+        <line x1="3"  y1="10" x2="21" y2="10"/>
+        <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+      </svg>
+      <span class="bl">Онлайн-запись</span>
+    </a>
+
+    <a href="https://vk.com/id327608564" target="_blank" rel="noopener" class="btn btn-vk">
+      <svg class="bi" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.525-2.049-1.714-1.033-1.01-1.49-.99-1.744-.99s-.44.22-.44 1.01v1.56c0 .44-.14.704-1.3.704-1.91 0-4.03-1.16-5.52-3.32-1.63-2.31-1.96-4.33-1.96-4.33 0-.22.22-.44.66-.44h1.744c.49 0 .676.22.858.73.968 2.75 2.57 5.18 3.238 5.18.253 0 .37-.12.37-.77V11.3c-.08-1.4-.81-1.52-.81-2.02 0-.24.2-.49.52-.49h2.74c.42 0 .56.22.56.7v3.76c0 .43.2.58.32.58.25 0 .47-.15 1.01-.73 1.56-1.74 2.67-4.42 2.67-4.42.14-.3.43-.58.88-.58h1.744c.52 0 .64.27.52.7-.22 1.03-2.36 4.04-2.36 4.04-.19.3-.25.44 0 .77.19.25.81.77 1.22 1.24.76.88 1.34 1.62 1.5 2.13.16.52-.09.78-.63.78z"/>
+      </svg>
+      <span class="bl">ВКонтакте</span>
+    </a>
+
+  </div>
+
+  <p class="footer">nail art &nbsp;·&nbsp; beauty &nbsp;·&nbsp; excellence</p>
+</main>
+
+</body>
+</html>
