@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алина Безрученко — продвижение в соцсетях</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a1a;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон с синими переливами */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-glow .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-glow .blob:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: #1a3a8a;
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .bg-glow .blob:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: #4f46e5;
+            top: 50%;
+            right: -5%;
+            animation-delay: -3s;
+            animation-duration: 10s;
+        }
+
+        .bg-glow .blob:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: #0ea5e9;
+            bottom: -10%;
+            left: 30%;
+            animation-delay: -5s;
+            animation-duration: 12s;
+        }
+
+        .bg-glow .blob:nth-child(4) {
+            width: 300px;
+            height: 300px;
+            background: #7c3aed;
+            top: 30%;
+            left: 50%;
+            animation-delay: -2s;
+            animation-duration: 9s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 40px) scale(0.95); }
+            75% { transform: translate(30px, 20px) scale(1.05); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Главный блок: текст + фото */
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-text h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text .tagline {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 18px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .hero-text .desc {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #d0d8f0;
+            max-width: 440px;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-photo {
+            flex-shrink: 0;
+            width: 340px;
+        }
+
+        .hero-photo img {
+            width: 100%;
+            height: 440px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 2px solid rgba(0, 212, 255, 0.25);
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Кнопки соцсетей */
+        .socials {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 520px;
+        }
+
+        .socials a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 28px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(0, 212, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .socials a::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .socials a:hover {
+            transform: translateY(-2px);
+            border-color: transparent;
+        }
+
+        /* Telegram */
+        .socials a.tg {
+            border-color: rgba(0, 212, 255, 0.4);
+        }
+        .socials a.tg::before {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 136, 255, 0.15));
+        }
+        .socials a.tg:hover {
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 212, 255, 0.15);
+        }
+        .socials a.tg:hover::before { opacity: 1; }
+
+        /* VK */
+        .socials a.vk {
+            border-color: rgba(80, 120, 255, 0.4);
+        }
+        .socials a.vk::before {
+            background: linear-gradient(135deg, rgba(80, 120, 255, 0.2), rgba(60, 90, 220, 0.15));
+        }
+        .socials a.vk:hover {
+            box-shadow: 0 0 25px rgba(80, 120, 255, 0.4), 0 0 60px rgba(80, 120, 255, 0.15);
+        }
+        .socials a.vk:hover::before { opacity: 1; }
+
+        /* Нельзяграм */
+        .socials a.ig {
+            border-color: rgba(225, 48, 108, 0.4);
+        }
+        .socials a.ig::before {
+            background: linear-gradient(135deg, rgba(225, 48, 108, 0.2), rgba(168, 85, 247, 0.15));
+        }
+        .socials a.ig:hover {
+            box-shadow: 0 0 25px rgba(225, 48, 108, 0.4), 0 0 60px rgba(168, 85, 247, 0.15);
+        }
+        .socials a.ig:hover::before { opacity: 1; }
+
+        /* Иконки SVG */
+        .icon {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .socials a span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .label-sub {
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: #8892b0;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 700px) {
+            .hero {
+                flex-direction: column-reverse;
+                gap: 28px;
+                text-align: center;
+            }
+
+            .hero-photo {
+                width: 260px;
+            }
+
+            .hero-photo img {
+                height: 340px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.4rem;
+            }
+
+            .hero-text .desc {
+                margin: 0 auto;
+            }
+
+            .socials {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .container {
+                padding: 40px 16px;
+            }
+
+            .socials a {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновые блобы -->
+    <div class="bg-glow">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <div class="container">
+        <!-- Герой: текст + фото -->
+        <div class="hero">
+            <div class="hero-text">
+                <h1>Алина Безрученко</h1>
+                <p class="tagline">Продвижение в соцсетях</p>
+                <p class="desc">Помогаю продавать через соцсети, навожу порядок в доходах и бизнес-процессах</p>
+            </div>
+            <div class="hero-photo">
+                <img src="алина безрученко.JPG" alt="Алина Безрученко">
+            </div>
+        </div>
+
+        <!-- Соцсети -->
+        <div class="socials">
+            <!-- Написать в ТГ -->
+            <a href="https://t.me/alina_bezruchenko" target="_blank" class="tg">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.28-.02-.12.03-2.02 1.28-5.69 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.41-.27-2.1-.5-.85-.28-1.52-.43-1.46-.91.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.26-3.54 3.93-1.62 4.75-1.9 5.28-1.91.12 0 .38.03.55.17.14.12.18.28.2.45-.01.06.01.24 0 .38z" fill="#00d4ff"/>
+                </svg>
+                <span>Написать в Telegram<span class="label-sub">@alina_bezruchenko</span></span>
+            </a>
+
+            <!-- Второй ТГ профиль -->
+            <a href="https://t.me/alina_hairstudio64" target="_blank" class="tg">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.28-.02-.12.03-2.02 1.28-5.69 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.41-.27-2.1-.5-.85-.28-1.52-.43-1.46-.91.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.26-3.54 3.93-1.62 4.75-1.9 5.28-1.91.12 0 .38.03.55.17.14.12.18.28.2.45-.01.06.01.24 0 .38z" fill="#00d4ff"/>
+                </svg>
+                <span>@alina_hairstudio64<span class="label-sub">Telegram</span></span>
+            </a>
+
+            <!-- ВКонтакте -->
+            <a href="https://vk.ru/alina_razgon" target="_blank" class="vk">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12.78 18.5h1.07s.32-.04.49-.22c.15-.17.15-.49.15-.49s-.02-1.49.67-1.71c.68-.22 1.56 1.47 2.49 2.12.7.49 1.24.38 1.24.38l2.48-.03s1.3-.08.68-1.1c-.05-.08-.36-.76-1.87-2.14-1.58-1.44-1.37-1.21.53-3.71 1.16-1.52 1.62-2.45 1.48-2.85-.14-.38-1-.28-1-.28l-2.8.02s-.21-.03-.36.06c-.15.09-.25.31-.25.31s-.44 1.18-1.03 2.18c-1.25 2.12-1.75 2.23-1.95 2.1-.47-.31-.35-1.24-.35-1.9 0-2.06.31-2.92-.61-3.14-.31-.07-.53-.12-1.31-.13-.99-.01-1.83 0-2.31.24-.31.16-.56.51-.41.53.18.03.6.11.82.41.28.39.27 1.25.27 1.25s.16 2.43-.38 2.73c-.37.2-.87-.21-1.96-2.14-.56-.99-.98-2.08-.98-2.08s-.08-.2-.23-.3c-.18-.13-.43-.17-.43-.17l-2.66.02s-.4.01-.54.18c-.13.16-.01.48-.01.48s2.07 4.84 4.42 7.28c2.15 2.24 4.6 2.1 4.6 2.1z" fill="#5078ff"/>
+                </svg>
+                <span>ВКонтакте<span class="label-sub">vk.ru/alina_razgon</span></span>
+            </a>
+
+            <!-- Нельзяграм -->
+            <a href="https://instagram.com/alina_bezruchenkoo?igshid=M2RkZGJiMzhjOQ%3D%3D&utm_source=qr" target="_blank" class="ig">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#ig-grad)" stroke-width="1.8" fill="none"/>
+                    <circle cx="12" cy="12" r="4.5" stroke="url(#ig-grad)" stroke-width="1.8" fill="none"/>
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-grad)"/>
+                    <defs>
+                        <linearGradient id="ig-grad" x1="2" y1="22" x2="22" y2="2">
+                            <stop offset="0%" stop-color="#feda75"/>
+                            <stop offset="25%" stop-color="#fa7e1e"/>
+                            <stop offset="50%" stop-color="#d62976"/>
+                            <stop offset="75%" stop-color="#962fbf"/>
+                            <stop offset="100%" stop-color="#4f5bd5"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Нельзяграм<span class="label-sub">@alina_bezruchenkoo</span></span>
+            </a>
+
+            <!-- ТГ-канал -->
+            <a href="https://t.me/pro_pricheski" target="_blank" class="tg">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.28-.02-.12.03-2.02 1.28-5.69 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.41-.27-2.1-.5-.85-.28-1.52-.43-1.46-.91.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.26-3.54 3.93-1.62 4.75-1.9 5.28-1.91.12 0 .38.03.55.17.14.12.18.28.2.45-.01.06.01.24 0 .38z" fill="#00d4ff"/>
+                </svg>
+                <span>ТГ-канал<span class="label-sub">@pro_pricheski</span></span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
