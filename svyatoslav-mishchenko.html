@@ -314,10 +314,10 @@
     /* ── Мобильная версия ── */
     @media (max-width: 740px) {
       .inner { grid-template-columns: 1fr; }
-      .photo-col { height: 380px; }
-      .photo-col img { object-position: center 15%; }
+      .photo-col { height: 360px; }
+      .photo-col img { object-fit: cover; object-position: center 10%; }
       .photo-col::after {
-        background: linear-gradient(180deg, transparent 40%, rgba(12,12,18,.95) 100%);
+        background: linear-gradient(180deg, transparent 60%, rgba(12,12,18,.95) 100%);
       }
       .content-col { padding: 28px 20px 36px; }
       .name { font-size: clamp(26px, 7vw, 34px); }
