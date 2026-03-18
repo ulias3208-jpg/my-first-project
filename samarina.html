@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Юлия Самарина — Парфюмерный стилист · AI-ментор</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0a0e;
+      --card-bg: rgba(14,13,18,.94);
+      --gold1: #D4AF37;
+      --gold2: #FFD700;
+      --gold3: #C9903A;
+      --gold-dim: rgba(212,175,55,.12);
+      --gold-glow: rgba(212,175,55,.25);
+      --text: #f2efe8;
+      --muted: rgba(242,239,232,.82);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Фоновое свечение ── */
+    .glow-orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(80px);
+      will-change: transform;
+    }
+    .glow-orb--1 {
+      width: 600px; height: 600px;
+      top: -200px; right: -150px;
+      background: radial-gradient(circle, rgba(212,175,55,.14) 0%, transparent 70%);
+      animation: orb-float 10s ease-in-out infinite;
+    }
+    .glow-orb--2 {
+      width: 400px; height: 400px;
+      bottom: -100px; left: -100px;
+      background: radial-gradient(circle, rgba(201,144,58,.10) 0%, transparent 70%);
+      animation: orb-float 12s ease-in-out infinite reverse;
+    }
+    @keyframes orb-float {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: .7; }
+      50% { transform: translate(10px, -8px) scale(1.03); opacity: .85; }
+    }
+
+    /* ── Карточка ── */
+    .card {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 960px;
+      margin: 40px 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--gold-dim);
+      border-radius: 28px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,.04),
+        0 40px 100px rgba(0,0,0,.80),
+        inset 0 1px 0 rgba(255,220,100,.06);
+      overflow: hidden;
+      animation: card-in 1s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(32px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .card::after {
+      content: '';
+      position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold1), transparent);
+      z-index: 3; pointer-events: none;
+    }
+
+    /* ── Сетка ── */
+    .inner {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      min-height: auto;
+    }
+
+    /* ── Колонка контента ── */
+    .content-col {
+      padding: 44px 40px 36px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .tag-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold1);
+      opacity: .7;
+      margin-bottom: 16px;
+    }
+    .tag-line::before, .tag-line::after {
+      content: '';
+      width: 20px; height: 1px;
+      background: var(--gold1);
+      opacity: .4;
+    }
+
+    /* ── Имя ── */
+    .name-block {
+      margin-bottom: 18px;
+    }
+    .name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(36px, 4.5vw, 56px);
+      font-weight: 500;
+      letter-spacing: .14em;
+      line-height: 1.1;
+      color: var(--gold1);
+      background: linear-gradient(135deg, #fff 0%, var(--gold2) 40%, var(--gold1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .roles {
+      margin-top: 10px;
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,.78);
+    }
+
+    .divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, var(--gold1), transparent);
+      border-radius: 2px;
+      margin: 18px 0;
+    }
+
+    /* ── Оффер ── */
+    .offer {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .offer p {
+      margin-bottom: 6px;
+      padding-left: 18px;
+      position: relative;
+    }
+    .offer p::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: var(--gold1);
+      font-size: 8px;
+      top: 6px;
+      opacity: .7;
+    }
+
+    /* ── Кнопка-подарок ── */
+    .btn-gift {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px 32px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: #0b0a0e;
+      background: linear-gradient(135deg, var(--gold2) 0%, var(--gold1) 50%, var(--gold3) 100%);
+      border: none;
+      box-shadow:
+        0 8px 32px rgba(212,175,55,.35),
+        0 2px 8px rgba(0,0,0,.30),
+        inset 0 1px 0 rgba(255,255,255,.25);
+      transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-gift::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+      animation: shimmer 4s ease-in-out 2;
+    }
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    .btn-gift:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 14px 44px rgba(212,175,55,.50),
+        0 4px 12px rgba(0,0,0,.30),
+        inset 0 1px 0 rgba(255,255,255,.30);
+    }
+    .btn-gift svg { flex-shrink: 0; }
+
+    /* ── Кнопки соцсетей ── */
+    .btns-stack {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s, border-color .3s;
+      background: rgba(212,175,55,.06);
+      border: 1px solid rgba(212,175,55,.18);
+      color: var(--text);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(212,175,55,.50);
+      box-shadow: 0 6px 24px rgba(212,175,55,.18);
+      color: var(--gold2);
+    }
+    .btn svg {
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+      color: var(--gold1);
+    }
+    .btn span {
+      position: relative; z-index: 1;
+    }
+    .btn-sub {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Фото ── */
+    .photo-col {
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-col img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: brightness(.93) saturate(1.05) contrast(1.04);
+    }
+    .photo-col::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(270deg, transparent 50%, var(--card-bg) 100%),
+        linear-gradient(180deg, rgba(14,13,18,.08) 0%, transparent 20%, transparent 70%, rgba(14,13,18,.45) 100%);
+      z-index: 1;
+    }
+
+    /* ── Футер ── */
+    .footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: rgba(212,175,55,.40);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    /* ── Частицы ── */
+    #particles {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    /* ── Мобильная версия ── */
+    @media (max-width: 740px) {
+      .inner {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        margin: 16px 10px;
+        border-radius: 22px;
+      }
+
+      /* Контент сверху, фото снизу */
+      .content-col { order: 1; }
+      .photo-col { order: 2; }
+
+      .content-col {
+        padding: 28px 20px 20px;
+        text-align: center;
+        align-items: center;
+      }
+      .name { font-size: clamp(28px, 7vw, 38px); letter-spacing: .10em; }
+      .roles { font-size: 11px; }
+      .tag-line { font-size: 10px; margin-bottom: 12px; }
+      .divider { margin: 14px auto; }
+      .offer { font-size: 13px; line-height: 1.65; margin-bottom: 20px; }
+      .offer p { text-align: left; }
+
+      .btn-gift { padding: 18px 24px; font-size: 16px; }
+      .btn { padding: 14px 18px; font-size: 14px; }
+      .btns-stack { grid-template-columns: 1fr; }
+
+      /* Фото как отдельный блок снизу */
+      .photo-col {
+        height: auto;
+        display: flex;
+        justify-content: center;
+        padding: 10px 20px 24px;
+        background: transparent;
+      }
+      .photo-col img {
+        width: auto !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 380px !important;
+        object-fit: contain !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(212,175,55,.25) !important;
+        box-shadow: 0 0 40px rgba(212,175,55,.15) !important;
+        filter: none !important;
+      }
+      .photo-col::after { display: none; }
+
+      .footer { margin-top: 10px; font-size: 10px; }
+
+      .glow-orb--1 { width: 350px; height: 350px; top: -120px; right: -80px; }
+      .glow-orb--2 { width: 250px; height: 250px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- Фоновые свечения -->
+<div class="glow-orb glow-orb--1"></div>
+<div class="glow-orb glow-orb--2"></div>
+
+<!-- Карточка -->
+<div class="card">
+  <div class="inner">
+
+    <!-- Контент -->
+    <div class="content-col">
+      <div class="tag-line">восприятие · технологии · эстетика</div>
+
+      <div class="name-block">
+        <h1 class="name">ЮЛИЯ<br>САМАРИНА</h1>
+        <p class="roles">Парфюмерный стилист &middot; AI-ментор &middot; Вайбкодер</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="offer">
+        <p>Расшифровываю ваш ароматный профиль и собираю точный невидимый код</p>
+        <p>Внедряю нейросети в работу, создавая цифровые решения под задачу</p>
+        <p>Собираю систему, в которой ваш образ, мышление и инструменты усиливают друг друга</p>
+      </div>
+
+      <!-- Забрать подарок -->
+      <a class="btn-gift" href="https://t.me/Samarina28_bot" target="_blank" rel="noopener">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 7h-1.209A4.92 4.92 0 0019 5.5C19 3.57 17.43 2 15.5 2c-1.622 0-2.705 1.482-3.404 3.085C11.398 3.57 10.269 2 8.5 2 6.57 2 5 3.57 5 5.5c0 .596.079 1.089.209 1.5H4c-1.1 0-2 .9-2 2v2c0 .55.45 1 1 1v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7c.55 0 1-.45 1-1V9c0-1.1-.9-2-2-2zm-4.5-3c.83 0 1.5.67 1.5 1.5S16.33 7 15.5 7h-2.839c.652-1.774 1.575-3 2.839-3zm-7 0c1.264 0 2.187 1.226 2.839 3H8.5C7.67 7 7 6.33 7 5.5S7.67 4 8.5 4zM4 9h7v2H4V9zm1 4h6v7H5v-7zm14 7h-6v-7h6v7zm2-9h-8V9h8v2z"/></svg>
+        <span>Забрать подарок</span>
+      </a>
+
+      <!-- Кнопки -->
+      <div class="btns-stack">
+        <!-- Telegram-канал -->
+        <a class="btn" href="https://t.me/parfum_2845" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.932z"/></svg>
+          <span>Telegram-канал</span>
+        </a>
+        <!-- Нельзяграм -->
+        <a class="btn" href="https://www.instagram.com/samarina_julia228?igsh=dzZ1OGU3ZGZrbm5v&utm_source=qr" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          <span>Нельзяграм</span>
+        </a>
+        <!-- VK личная -->
+        <a class="btn" href="https://vk.com/samarina_julia" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.523-2.049-1.727-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.743c.372 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.405 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .643.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.49-.085.745-.576.745z"/></svg>
+          <span>VK<span class="btn-sub">Личная страница</span></span>
+        </a>
+        <!-- VK сообщество -->
+        <a class="btn" href="https://vk.com/pshik_shik" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.523-2.049-1.727-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.743c.372 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.405 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .643.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.49-.085.745-.576.745z"/></svg>
+          <span>VK-сообщество<span class="btn-sub">Пшик-Шик</span></span>
+        </a>
+        <!-- Позвонить -->
+        <a class="btn" href="tel:+79198308956">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1v3.49a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/></svg>
+          <span>Позвонить</span>
+        </a>
+        <!-- Написать SMS -->
+        <a class="btn" href="sms:+79198308956">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
+          <span>Написать</span>
+        </a>
+      </div>
+
+      <p class="footer">@samarina_julia &middot; парфюм &middot; нейросети &middot; стиль</p>
+    </div>
+
+    <!-- Фото -->
+    <div class="photo-col">
+      <img src="juliasamarina.jpg" alt="Юлия Самарина" />
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const cv = document.getElementById('particles');
+  const cx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; if(typeof buildGlow === 'function') buildGlow(); }
+  resize();
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 150); });
+
+  const COLORS = [
+    'rgba(212,175,55,1)',
+    'rgba(201,144,58,1)',
+    'rgba(255,215,0,1)',
+    'rgba(244,215,153,1)',
+    'rgba(180,140,40,1)',
+  ];
+
+  class Spark {
+    reset(init){
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 8;
+      this.r = Math.random() * 1.2 + .2;
+      this.vy = -(Math.random() * .3 + .08);
+      this.vx = (Math.random() - .5) * .2;
+      this.life = Math.random() * .5 + .5;
+      this.decay = Math.random() * .002 + .001;
+      this.col = COLORS[Math.floor(Math.random() * COLORS.length)];
+    }
+    constructor(){ this.reset(true); }
+    tick(){
+      this.y += this.vy;
+      this.x += this.vx + Math.sin(this.y * .025) * .25;
+      this.vy *= .999;
+      this.life -= this.decay;
+      if(this.life <= 0 || this.y < -8) this.reset(false);
+    }
+    draw(){
+      cx.beginPath();
+      cx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      cx.fillStyle = this.col;
+      cx.globalAlpha = Math.max(0, this.life) * .18;
+      cx.fill();
+    }
+  }
+
+  const sparks = Array.from({length: 25}, () => new Spark());
+
+  let glowGrad;
+  function buildGlow(){
+    glowGrad = cx.createRadialGradient(W * .75, 0, 40, W * .75, 0, 350);
+    glowGrad.addColorStop(0,   'rgba(212,175,55,.04)');
+    glowGrad.addColorStop(.5,  'rgba(201,144,58,.015)');
+    glowGrad.addColorStop(1,   'rgba(0,0,0,0)');
+  }
+  buildGlow();
+  function drawGlow(){
+    cx.fillStyle = glowGrad;
+    cx.fillRect(0, 0, W, H);
+  }
+
+  (function loop(){
+    cx.clearRect(0, 0, W, H);
+    cx.globalAlpha = 1;
+    drawGlow();
+    for(const s of sparks){ s.tick(); s.draw(); }
+    cx.globalAlpha = 1;
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+</body>
+</html>
